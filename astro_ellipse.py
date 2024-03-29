@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 import matplotlib.pyplot as plt
+import astropy.wcs as wcs
 
 
 class Ellipse_fitter():
@@ -12,7 +13,7 @@ class Ellipse_fitter():
     #### FUNCTIONS TO BE CALLED ####
     
     ## function to fit a 2D ellipse to the data with curve_fit() from scipy.optimize
-    def fit_ellipse(self, data, pix_size, p0 = None, print_results = True, plot_model = True):
+    def fit_ellipse(self, data, pix_size, p0 = None, print_results = True, plot_model = True, header = None):
         ## prepare the data for input into the fitting function
         xs, ys, zs = self.__prepare_data_for_fitting(data)
     
@@ -29,19 +30,24 @@ class Ellipse_fitter():
     
         ## plot the elliptical ring model if requested
         if(plot_model):
-            self.__plot_ellipse_model(np.indices(data.shape), popt)
+            self.__plot_ellipse_model(np.indices(data.shape), popt, header = header)
             
         return popt, pcov
 
 
     ## plot the data with the model of the elliptical ring
-    def plot_data_model(self, data, popt, levs, wids, data_unit = "T$_{mb}$ (K)"):
+    def plot_data_model(self, data, popt, levs, wids, data_unit = "T$_{mb}$ (K)", header = None):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(np.indices(data.shape), *popt)
         
         ## create the figure
         fig, ax = plt.subplots()
         ax1 = fig.add_subplot(111)
+        ## add RA - DEC if specified
+        if(header is not None):
+            w = wcs.WCS(header)
+            fig.delaxes(ax1)
+            ax1 = fig.add_subplot(111, projection = w)
         
         ## add the image
         im = ax1.imshow(data, origin='lower', vmin=0.)
@@ -52,6 +58,11 @@ class Ellipse_fitter():
         ## create and plot the colorbar
         cbar = fig.colorbar(im)
         cbar.set_label(data_unit, labelpad=15.,rotation=270.)
+        
+        ## add ra dec if specified
+        if(header is not None):
+            plt.xlabel("RA [J2000]")
+            plt.ylabel("DEC [J2000]")
     
         ## finalize the plot and show()
         ax.axis('off')
@@ -146,13 +157,17 @@ class Ellipse_fitter():
         
     
     ## plot the model of the elliptical ring
-    def __plot_ellipse_model(self, inds, popt, data_unit = "T$_{mb}$ (K)"):
+    def __plot_ellipse_model(self, inds, popt, data_unit = "T$_{mb}$ (K)", header = None):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(inds, *popt)
         
         ## create figure
         fig, ax = plt.subplots()
         ax1 = fig.add_subplot(111)
+        if(header is not None):
+            w = wcs.WCS(header)
+            fig.delaxes(ax1)
+            ax1 = fig.add_subplot(111, projection = w)
         
         ## add the image
         im = ax1.imshow(fit_result, origin='lower', vmin=0.)
@@ -160,6 +175,11 @@ class Ellipse_fitter():
         ## create and plot the colorbar
         cbar = fig.colorbar(im)
         cbar.set_label(data_unit, labelpad=15.,rotation=270.)
+        
+        ## add ra dec if specified
+        if(header is not None):
+            ax1.set_xlabel("RA [J2000]")
+            ax1.set_ylabel("DEC [J2000]")
     
         ## finalize the plot and show()
         ax.axis('off')
