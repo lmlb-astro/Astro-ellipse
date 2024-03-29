@@ -35,7 +35,7 @@ class Ellipse_fitter():
 
 
     ## plot the data with the model of the elliptical ring
-    def plot_data_model(self, data, popt):
+    def plot_data_model(self, data, popt, levs, wids):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(np.indices(data.shape), *popt)
         
@@ -47,7 +47,7 @@ class Ellipse_fitter():
         im = ax1.imshow(data, origin='lower', vmin=0.)
         
         ## add the contours
-        ctrs = ax1.contour(fit_result, levels = [5., 7., 9., 11.], linewidths = [0.5, 0.7, 0.9, 1.1], colors = 'k', origin = 'lower')
+        ctrs = ax1.contour(fit_result, levels = levs, linewidths = wids, colors = 'k', origin = 'lower')
         
         ## create and plot the colorbar
         cbar = fig.colorbar(im)
@@ -142,7 +142,7 @@ class Ellipse_fitter():
         print("The peak intensity at the crest of the elliptical ring is: {T} K".format(T = round(popt[5], 1)))
         
         ## print the rotation angle of the ellipse
-        print("The angle of the ellipse is: {th}".format(th = round(popt[6]*180./np.pi, 1)))
+        print(u"The tilt angle of the ellipse is: {th}\N{DEGREE SIGN}".format(th = round(popt[6]*180./np.pi, 1)))
         
     
     ## plot the model of the elliptical ring
