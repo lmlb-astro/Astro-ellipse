@@ -35,7 +35,7 @@ class Ellipse_fitter():
 
 
     ## plot the data with the model of the elliptical ring
-    def plot_data_model(self, data, popt, levs, wids):
+    def plot_data_model(self, data, popt, levs, wids, data_unit = "T$_{mb}$ (K)"):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(np.indices(data.shape), *popt)
         
@@ -51,7 +51,7 @@ class Ellipse_fitter():
         
         ## create and plot the colorbar
         cbar = fig.colorbar(im)
-        cbar.set_label('T$_{mb}$ (K)', labelpad=15.,rotation=270.)
+        cbar.set_label(data_unit, labelpad=15.,rotation=270.)
     
         ## finalize the plot and show()
         ax.axis('off')
@@ -99,7 +99,7 @@ class Ellipse_fitter():
         d = np.abs(d1-d2)
         
         ## return the intensity at the location
-        Treturn = Tpeak * np.exp(-(d/w)**2)
+        Treturn = Tpeak * np.exp(-0.5*(d/w)**2)
         
         return Treturn 
 
@@ -146,7 +146,7 @@ class Ellipse_fitter():
         
     
     ## plot the model of the elliptical ring
-    def __plot_ellipse_model(self, inds, popt):
+    def __plot_ellipse_model(self, inds, popt, data_unit = "T$_{mb}$ (K)"):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(inds, *popt)
         
@@ -159,7 +159,7 @@ class Ellipse_fitter():
         
         ## create and plot the colorbar
         cbar = fig.colorbar(im)
-        cbar.set_label('T$_{mb}$ (K)', labelpad=15.,rotation=270.)
+        cbar.set_label(data_unit, labelpad=15.,rotation=270.)
     
         ## finalize the plot and show()
         ax.axis('off')
