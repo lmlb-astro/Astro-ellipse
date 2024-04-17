@@ -36,7 +36,7 @@ class Ellipse_fitter():
 
 
     ## plot the data with the model of the elliptical ring
-    def plot_data_model(self, data, popt, levs, wids, data_unit = "T$_{mb}$ (K)", header = None):
+    def plot_data_model(self, data, popt, levs, wids, data_unit = "T$_{mb}$ (K)", header = None, color_map_cut = False):
         ## generate the model
         fit_result = self.__ellipse_gauss_ring(np.indices(data.shape), *popt)
         
@@ -49,8 +49,13 @@ class Ellipse_fitter():
             fig.delaxes(ax1)
             ax1 = fig.add_subplot(111, projection = w)
         
+        ## Set the limit on the maximal intensity of the color map
+        vmax = None
+        if(color_map_cut): vmax = popt[5]
+        
+        
         ## add the image
-        im = ax1.imshow(data, origin='lower', vmin=0.)
+        im = ax1.imshow(data, origin = 'lower', vmin = 0., vmax = vmax)
         
         ## add the contours
         ctrs = ax1.contour(fit_result, levels = levs, linewidths = wids, colors = 'k', origin = 'lower')
